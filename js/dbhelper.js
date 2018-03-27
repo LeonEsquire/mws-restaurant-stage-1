@@ -158,10 +158,18 @@ class DBHelper {
    */
   static thumbnailImageUrlForRestaurant(restaurant) {
     const image = restaurant.photograph;
-    const thumbnailUrl = image.slice(0, image.indexOf('.')) + '-thumbnail.jpg'
+    const thumbnailUrl = image.slice(0, image.indexOf('.')) + '-thumbnail.jpg';
     return (`/img/thumbnail/${thumbnailUrl}`);
   }
 
+  /**
+   * Restaurant 1x resolution image URL.
+   */
+   static lowerResolutionImage(restaurant) {
+     const image = restaurant.photograph;
+     const lowResUrl = image.slice(0, image.indexOf('.')) + '_1x.jpg';
+     return (`/img/1x/${lowResUrl}`);
+   }
 
   /**
    * Map marker for a restaurant.
