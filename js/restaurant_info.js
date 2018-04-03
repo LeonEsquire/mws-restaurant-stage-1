@@ -1,4 +1,4 @@
-let restaurant;
+let restaurant, isFirstTimeOnPage = true;
 var map;
 
 /**
@@ -56,12 +56,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.innerHTML = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  // const image = document.getElementById('restaurant-img');
   const currentImageUrl = DBHelper.imageUrlForRestaurant(restaurant);
   const lowerResolutionImage = DBHelper.lowerResolutionImage(restaurant);
-//   sourceMobile.media = '(min-width: 767px) and (max-width: 1060px)'
-// "(min-width: 767px) and (max-width: 1060px)"
-  // image.sizes = "(min-width: 767px) 40vw, 84vw";
+
+  image.setAttribute('alt', restaurant.name + ' Restaurant');
   image.src = currentImageUrl;
   image.sizes = "(min-width: 767px) 40vw, 84vw";
   image.srcset =  currentImageUrl + ' 800w, ' + lowerResolutionImage + ' 400w';
@@ -120,6 +118,12 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
+
+  // Changing focus on first page load
+  if (isFirstTimeOnPage) {
+    document.getElementById('main-title').focus();
+    isFirstTimeOnPage = false;
+  }
 }
 
 /**
@@ -156,7 +160,11 @@ createReviewHTML = (review) => {
 fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
-  li.innerHTML = restaurant.name;
+  const currentPageAnchor = document.createElement('a');
+  currentPageAnchor.setAttribute('aria-current', 'page');
+  currentPageAnchor.href = "#";
+  currentPageAnchor.innerHTML = restaurant.name;
+  li.appendChild(currentPageAnchor);
   breadcrumb.appendChild(li);
 }
 

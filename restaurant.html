@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,16 +14,20 @@
 <body class="inside">
   <!-- Beginning header -->
   <header>
+
+    <div class="old_nav">
+      <h1><a id="main-title" href="/">Restaurant Reviews</a></h1>
+    </div>
     <!-- Beginning nav -->
-    <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
-    </nav>
     <!-- Beginning breadcrumb -->
-    <ul id="breadcrumb" >
-      <li><a href="/">Home</a></li>
-    </ul>
+    <nav aria-label="Breadcrumb">
+      <ol id="breadcrumb" >
+        <li><a href="/">Home</a></li>
+      </ol>
+    </nav>
     <!-- End breadcrumb -->
     <!-- End nav -->
+    <a href="#footer" class="skip-link">Skip map</a>
   </header>
   <!-- End header -->
 
@@ -31,7 +35,7 @@
   <main id="maincontent">
     <!-- Beginning map -->
     <section id="map-container">
-      <div id="map"></div>
+      <div aria-hidden="true" id="map"></div>
     </section>
     <!-- End map -->
     <!-- Beginning restaurant -->

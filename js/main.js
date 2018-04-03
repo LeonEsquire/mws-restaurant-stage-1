@@ -1,6 +1,7 @@
 let restaurants,
   neighborhoods,
-  cuisines
+  cuisines,
+  isFirstTimeOnPage = true
 var map
 var markers = []
 
@@ -10,6 +11,10 @@ var markers = []
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
+  if (isFirstTimeOnPage) {
+    document.getElementById('main-title').focus();
+    isFirstTimeOnPage = false;
+  }
 });
 
 /**
@@ -141,6 +146,7 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.src = DBHelper.thumbnailImageUrlForRestaurant(restaurant);
+  image.alt = `${restaurant.name}`;
   li.append(image);
 
   const name = document.createElement('h1');
@@ -156,8 +162,10 @@ createRestaurantHTML = (restaurant) => {
   li.append(address);
 
   const more = document.createElement('a');
+  const btnTitle = `View Details of ${restaurant.name}'s Restaurant`;
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
+  more.setAttribute('aria-label', btnTitle);
   li.append(more)
 
   return li
