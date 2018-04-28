@@ -11,6 +11,7 @@ var markers = []
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
+  updateRestaurants();
   if (isFirstTimeOnPage) {
     document.getElementById('main-title').focus();
     isFirstTimeOnPage = false;
