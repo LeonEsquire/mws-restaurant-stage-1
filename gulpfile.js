@@ -5,8 +5,8 @@ var rename = require("gulp-rename");
 gulp.task('default', function () {
   gulp.src('./img/*.jpg')
     .pipe(imageResize({
-      height : 248,
+      width : 400,
     }))
-    .pipe(rename(function(path) { path.basename += "-thumbnail"; }))
-    .pipe(gulp.dest('./img/test/'));
+    .pipe(rename(function(path) { path.basename += "_1x"; }))
+    .pipe(gulp.dest('./img/1x/'));
 });
