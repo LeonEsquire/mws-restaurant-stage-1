@@ -6,10 +6,9 @@ self.addEventListener('install', function(event) {
     'js/dbhelper.js',
     'js/index.js',
     'js/main.js',
-    'js/restaurant_info.js',
-    'data/restaurants.json',
     'css/styles.css',
-    'https://fonts.googleapis.com/css?family=Roboto'
+    'https://fonts.googleapis.com/css?family=Roboto',
+    'https://cdn.jsdelivr.net/npm/idb@2.1.1/lib/idb.min.js'
   ]
 
   event.waitUntil(caches.open('restaurant-static-v1')
@@ -24,8 +23,8 @@ self.addEventListener('fetch', function(event) {
     caches.open('restaurant-static-v1').then(function(cache) {
       return cache.match(event.request).then(function(response) {
         return response || fetch(event.request).then(function(response) {
-          cache.put(event.request, response.clone());
-          return response;
+            cache.put(event.request, response.clone());
+            return response;
         });
       });
     })
