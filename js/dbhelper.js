@@ -28,36 +28,46 @@ class DBHelper {
    */
   static fetchRestaurants(callback) {
     fetch(DBHelper.DATABASE_URL)
-    .then(function(response) {
+    .then((response) => {
       if (response.status !== 200) {
         throw Error(response.status);
       }
       return response.json();
     })
-    .then(function(json) {
-      DBHelper.dbRestaurant.then(function(db) {
-        var tx = db.transaction('restaurants', 'readwrite');
-        var restaurantsStore = tx.objectStore('restaurants');
+    .then(restaurants => callback(null, restaurants))
+    .catch(() => callback('Can\'t fetch restaurants', null))
 
-        json.forEach(restaurant => {
-          restaurantsStore.put(restaurant);
-        });
-      })
-      .then(() => {
-        return DBHelper.dbRestaurant.then(function(db) {
-          var tx = db.transaction('restaurants');
-          var restaurantsStore = tx.objectStore('restaurants');
-
-          return restaurantsStore.getAll();
-        })
-      })
-      .then(restaurants => callback(null, restaurants));
-      //callback(null, json);
-    })
-    .catch(function(err) {
-      const error = (`Request failed. ${err}`);
-      callback(error, null);
-    })
+    // fetch(DBHelper.DATABASE_URL)
+    // .then(function(response) {
+    //   if (response.status !== 200) {
+    //     throw Error(response.status);
+    //   }
+    //   return response.json();
+    // })
+    // .then(function(json) {
+    //   DBHelper.dbRestaurant.then(function(db) {
+    //     var tx = db.transaction('restaurants', 'readwrite');
+    //     var restaurantsStore = tx.objectStore('restaurants');
+    //
+    //     json.forEach(restaurant => {
+    //       restaurantsStore.put(restaurant);
+    //     });
+    //   })
+    //   .then(() => {
+    //     return DBHelper.dbRestaurant.then(function(db) {
+    //       var tx = db.transaction('restaurants');
+    //       var restaurantsStore = tx.objectStore('restaurants');
+    //
+    //       return restaurantsStore.getAll();
+    //     })
+    //   })
+    //   .then(restaurants => callback(null, restaurants));
+    //   //callback(null, json);
+    // })
+    // .catch(function(err) {
+    //   const error = (`Request failed. ${err}`);
+    //   callback(error, null);
+    // })
 
 
 

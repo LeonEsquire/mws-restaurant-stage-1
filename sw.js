@@ -1,3 +1,5 @@
+importScripts('./js/idb.js');
+
 self.addEventListener('install', function(event) {
   const urlsToCache = [
     '/',
@@ -6,6 +8,7 @@ self.addEventListener('install', function(event) {
     'js/dbhelper.js',
     'js/index.js',
     'js/main.js',
+    'js/idb.js',
     'css/styles.css',
     'https://fonts.googleapis.com/css?family=Roboto',
     'https://cdn.jsdelivr.net/npm/idb@2.1.1/lib/idb.min.js'
@@ -19,8 +22,39 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.open('restaurant-static-v1').then(function(cache) {
+  // JSON restaurants info for and from indexDb
+  if (event.request.url.endsWith('1337/restaurants')) {
+    event.respondWith(
+        dbPromise().then(function(db) {
+          var restaurantsStore = db.transaction('restaurants').objectStore('restaurants');
+          return restaurantsStore.getAll();
+        })
+        .then(function(elements) {
+          if (!elements.length) {
+            return fetch(event.request).then(function(response) {
+              const responseToCache = response.clone().json();
+
+              return responseToCache.then(function(json) {
+                addData(json);
+                return response;
+              })
+            });
+          } else {
+            const response = new Response(JSON.stringify(elements), {
+              headers: new Headers({
+                'Content-type': 'application/json',
+                'Access-Control-Allow-Credentials': 'true'
+              }),
+              status: 200
+            });
+            return response;
+          }
+        })
+      );
+      return
+    }
+
+    event.respondWith(caches.open('restaurant-static-v1').then(function(cache) {
       return cache.match(event.request).then(function(response) {
         return response || fetch(event.request).then(function(response) {
             cache.put(event.request, response.clone());
@@ -28,9 +62,32 @@ self.addEventListener('fetch', function(event) {
         });
       });
     })
+
   );
 });
 
+
+function dbPromise() {
+  var dbPromise = idb.open('restaurant', 1, function(upgradeDb) {
+    var store = upgradeDb.createObjectStore('restaurants', {
+      keyPath: 'id'
+    });
+  });
+  return dbPromise;
+}
+
+function addData(data) {
+  dbPromise().then(function(db) {
+    var tx = db.transaction('restaurants', 'readwrite');
+    var restaurantsStore = tx.objectStore('restaurants');
+    data.forEach(element => {
+      restaurantsStore.put(element);
+    })
+  })
+  .catch(function(err) {
+    console.log('something went wrong with DB adding', err);
+  });
+}
 
 // self.addEventListener('fetch', function(event) {
 //   event.respondWith(
