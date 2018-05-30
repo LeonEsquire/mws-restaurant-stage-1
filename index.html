@@ -3,6 +3,7 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#252831"/>
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <link rel="stylesheet" href="css/styles.css">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
@@ -19,7 +20,14 @@
 
   <main id="maincontent">
     <section role="application" aria-label="map" id="map-container">
-      <div aria-hidden="true" id="map"></div>
+      <div aria-hidden="true" id="map">
+        <div id="my-fast-map" data-iframe-width="600" data-iframe-height="300" data-iframe-src="https://www.google.com/maps/@40.722216,-73.987501,12z/data=!10m1!1e1!12b1?source=apiv3&amp;rapsrc=apiv3">
+          <a href="#" title="Click to activate map">
+            <img id="map-image" style="max-height: 100%; display: block; margin: 0 auto" src="https://maps.googleapis.com/maps/api/staticmap?center=205+E+Houston+St,+New+York,+NY+10002&zoom=12&scale=1&size=640x400&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C171+E+Broadway,+New+York,+NY+10002&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C919+Fulton+St,+Brooklyn,+NY+11238&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C1+E+32nd+St,+New+York,+NY+10016&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C205+E+Houston+St,+New+York,+NY+10002&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C261+Moore+St,+Brooklyn,+NY+11206&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C454+Van+Brunt+St,+Brooklyn,+NY+11231&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C430+E+9th+St,+New+York,+NY+10009&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C131+Sullivan+St,+New+York,+NY+10012&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C1209+Jackson+Ave,+Queens,+NY+11101&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C5-48+49th+Ave,+Queens,+NY+11101" alt="Click to activate map" />
+          </a>
+</div>
+
+      </div>
     </section>
     <section class="filter-results">
       <div class="filter-options">
@@ -38,7 +46,7 @@
   <script src="https://cdn.jsdelivr.net/npm/idb@2.1.1/lib/idb.min.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
-  <script defer src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap"></script>
+  <!-- <script defer src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap"></script> -->
   <script src="/js/index.js"></script>
 
 

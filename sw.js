@@ -1,4 +1,4 @@
-importScripts('.js/idb.js');
+importScripts('./js/idb.js');
 
 self.addEventListener('install', function(event) {
   const urlsToCache = [

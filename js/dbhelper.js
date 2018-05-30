@@ -35,7 +35,7 @@ class DBHelper {
       return response.json();
     })
     .then(restaurants => callback(null, restaurants))
-    .catch(() => callback('Can\'t fetch restaurants', null))
+    .catch((err) => callback(err, null))
 
     // fetch(DBHelper.DATABASE_URL)
     // .then(function(response) {

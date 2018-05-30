@@ -11,12 +11,25 @@ var markers = []
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
-  updateRestaurants();
+  updateRestaurants(skipMapMarkers = true);
+  placeholderForGoogleMap();
   if (isFirstTimeOnPage) {
     document.getElementById('main-title').focus();
     isFirstTimeOnPage = false;
   }
 });
+
+placeholderForGoogleMap = () => {
+  const linkForMap = document.querySelector('#map-container a');
+  linkForMap.addEventListener('click', (e) => {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap';
+    script.setAttribute('defer', 'defer');
+    const body = document.querySelector('body');
+    body.append(script);
+    e.target.remove();
+  });
+}
 
 /**
  * Fetch all neighborhoods and set their HTML.
@@ -92,7 +105,7 @@ window.initMap = () => {
 /**
  * Update page and map for current restaurants.
  */
-updateRestaurants = () => {
+updateRestaurants = (skipMapMarkers) => {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -102,12 +115,23 @@ updateRestaurants = () => {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
+  const imageOfMap = document.querySelector('#map-image');
+  // placing map instead of image, when new filter option is selected
+  if (!skipMapMarkers && imageOfMap) {
+    imageOfMap.remove();
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap';
+    script.setAttribute('defer', 'defer');
+    const body = document.querySelector('body');
+    body.append(script);
+  }
+
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!
       console.error(error);
     } else {
       resetRestaurants(restaurants);
-      fillRestaurantsHTML();
+      fillRestaurantsHTML(undefined, skipMapMarkers);
     }
   })
 }
@@ -130,12 +154,12 @@ resetRestaurants = (restaurants) => {
 /**
  * Create all restaurants HTML and add them to the webpage.
  */
-fillRestaurantsHTML = (restaurants = self.restaurants) => {
+fillRestaurantsHTML = (restaurants = self.restaurants, skipMapMarkers) => {
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });
-  addMarkersToMap();
+  if (!skipMapMarkers) addMarkersToMap();
 }
 
 /**
