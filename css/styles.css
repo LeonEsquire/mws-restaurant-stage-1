@@ -186,7 +186,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   min-height: 248px;
   min-width: 100%;
 }
-#restaurants-list li h1 {
+#restaurants-list li h2 {
   /* color: #f18200; */
 	color: #B35F00;
   font-family: 'Roboto', Arial,sans-serif;
@@ -215,6 +215,9 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   text-transform: uppercase;
 }
 
+#my-fast-map {
+	overflow:hidden;
+}
 /* ====================== Restaurant Details ====================== */
 .inside {
 	display: grid;
@@ -316,7 +319,7 @@ text-align: center;
   padding: 30px 40px 80px;
 	grid-area: 2/1/span 1/ span 2;
 }
-#reviews-container h2 {
+#reviews-container h3 {
   color: #B35F00;
   font-size: 24pt;
   font-weight: 300;

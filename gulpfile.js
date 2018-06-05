@@ -1,12 +1,13 @@
-var gulp = require('gulp');
-var imageResize = require('gulp-image-resize');
-var rename = require("gulp-rename");
+let gulp = require('gulp');
+let babel = require('gulp-babel');
+let uglify = require('gulp-uglify');
 
-gulp.task('default', function () {
-  gulp.src('./img/*.jpg')
-    .pipe(imageResize({
-      width : 400,
+gulp.task('minify', () => {
+  return gulp.src('./jsSrc/**/*.js')
+    .pipe(babel({
+      presets: ['es2015']
     }))
-    .pipe(rename(function(path) { path.basename += "_1x"; }))
-    .pipe(gulp.dest('./img/1x/'));
+    .pipe(uglify())
+    .pipe(gulp.dest('./js'))
+    // [...]
 });

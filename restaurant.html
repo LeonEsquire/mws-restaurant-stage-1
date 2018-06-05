@@ -7,6 +7,8 @@
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <!-- Main CSS file -->
   <link rel="stylesheet" href="css/styles.css" type="text/css">
+  <meta name="theme-color" content="#252831"/>
+  <link rel="manifest" href="/manifest.webmanifest">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <title>Restaurant Info</title>
 </head>
@@ -35,7 +37,14 @@
   <main id="maincontent">
     <!-- Beginning map -->
     <section id="map-container">
-      <div aria-hidden="true" role="application" id="map"></div>
+      <div aria-hidden="true" role="application" id="map">
+        <div id="my-fast-map" data-iframe-width="600" data-iframe-height="300" data-iframe-src="https://www.google.com/maps/@40.722216,-73.987501,12z/data=!10m1!1e1!12b1?source=apiv3&amp;rapsrc=apiv3">
+          <a href="#" title="Click to activate map">
+            <img id="map-image" style="width: 100%" alt="Click to activate map" />
+          </a>
+        </div>
+      </div>
+
     </section>
     <!-- End map -->
     <!-- Beginning restaurant -->
@@ -67,9 +76,7 @@
   <script type="text/javascript" src="js/dbhelper.js"></script>
   <!-- Main javascript file -->
   <script type="text/javascript" src="js/restaurant_info.js"></script>
-  <!-- Google Maps -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap"></script>
-  <!-- End scripts -->
+
   <script src="/js/index.js"></script>
 </body>
 

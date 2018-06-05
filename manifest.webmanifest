@@ -1,0 +1,11 @@
+{
+  "short_name": "mwsApp",
+  "name": "Restaurant App",
+  "icons": [
+  ],
+  "start_url": "/",
+  "background_color": "#f3f3f3",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#252831"
+}
