@@ -23,9 +23,64 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function(event) {
 
+  if (event.request.method === 'PUT') {
+    const url = new URL(event.request.url)
+    const is_favorite = url.searchParams.get('is_favorite');
+    const restaurantId = parseInt(url.pathname.match(/\d{1,2}/g).join(','));
+    event.respondWith(
+      dbPromise().then(function(db) {
+        var restaurantsStore = db.transaction('restaurants').objectStore('restaurants');
+        return restaurantsStore.get(parseInt(restaurantId));
+      })
+      .then(function(restaurantStore) {
+
+
+        //Changing is_favorite value in IndexDB
+        return fetch(event.request)
+        .then(response => response.json())
+        .then(data => {
+          dbPromise()
+          .then(function(db) {
+            const tx = db.transaction('restaurants', 'readwrite');
+            const restaurantsStore = tx.objectStore('restaurants');
+            restaurantsStore.iterateCursor(cursor => {
+              if (!cursor) return;
+              const currentValue = cursor.value;
+              currentValue.is_favorite = is_favorite;
+              if (cursor.value.id === restaurantId) cursor.update(currentValue);
+              cursor.continue();
+            });
+            // restaurantsStore.complete.then(() => console.log('done'));
+          });
+
+          const response = new Response(JSON.stringify(data), {
+            headers: new Headers({
+              'Content-type': 'application/json',
+              'Access-Control-Allow-Credentials': 'true'
+            }),
+            status: 200
+          });
+          return response;
+        });
+        // .then(response => response.json())
+        // .then(data => {
+        //   dbPromise()
+        //   .then(function(db) {
+        //     const tx = db.transaction('restaurants', 'readwrite');
+        //     const restaurantsStore = tx.objectStore('restaurants');
+        //     restaurantsStore.get(restaurantId)
+        //     .then(val => console.log(val));
+        //   });
+        // });
+
+
+      })
+    );
+    return;
+  }
+
   // JSON request for individual restaurant
   if (/1337\/restaurants\/\d{1,2}$/.test(event.request.url)) {
-    console.log(event.request.url);
     const restaurantId = event.request.url.match(/\d{1,2}$/g).join(',');
     event.respondWith(
       dbPromise().then(function(db) {
@@ -34,7 +89,7 @@ self.addEventListener('fetch', function(event) {
       })
       .then(function(restaurantStore) {
         if (!restaurantStore) {
-          return fetch(event.request).then(function(response) {
+          return fetch('http://localhost:1337/restaurants').then(function(response) {
             const responseToCache = response.clone().json();
 
             return responseToCache.then(function(json) {
@@ -93,7 +148,9 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(caches.open('restaurant-static-v1').then(function(cache) {
       return cache.match(event.request).then(function(response) {
         return response || fetch(event.request).then(function(response) {
-            cache.put(event.request, response.clone());
+            if(event.request.method === 'GET') {
+              cache.put(event.request, response.clone());
+            }
             return response;
         });
       });
@@ -106,6 +163,15 @@ self.addEventListener('fetch', function(event) {
 function dbPromise() {
   var dbPromise = idb.open('restaurant', 1, function(upgradeDb) {
     var store = upgradeDb.createObjectStore('restaurants', {
+      keyPath: 'id'
+    });
+  });
+  return dbPromise;
+}
+
+function dbReview() {
+  var dbPromise = idb.open('review', 1, function(upgradeDb) {
+    var store = upgradeDb.createObjectStore('reviews', {
       keyPath: 'id'
     });
   });

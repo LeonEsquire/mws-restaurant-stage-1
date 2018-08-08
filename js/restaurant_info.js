@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function(){
     request.open('POST', 'http://localhost:1337/reviews/')
     request.onload = () => {
       const data = JSON.parse(request.responseText);
-      console.log(data)
     }
     const form = new FormData();
     form.append('name', name);
@@ -63,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function(){
     return false;
   };
 
-  // Favorite button functionality
+  // Favorite button functionality using Fetch api
   const favButton = document.querySelector('#favButton');
 
   favButton.addEventListener('click', function(e) {
@@ -71,14 +70,33 @@ document.addEventListener('DOMContentLoaded', function(){
     const restaurant_id = parseInt(url.searchParams.get('id'));
     const otherFav = (self.restaurant.is_favorite === 'true') ? 'false' : 'true';
     url = `http://localhost:1337/restaurants/${restaurant_id}/?is_favorite=${otherFav}`;
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", url);
-    xhr.onload = function () {
-      favButton.innerHTML = isRestaurantFavorite(self.restaurant);
-      self.restaurant.is_favorite = otherFav;
-    }
-    xhr.send();
+    fetch(url, {method: 'PUT'})
+      .then(response => response.json())
+      .then(data => {
+        favButton.innerHTML = isRestaurantFavorite(self.restaurant);
+        self.restaurant.is_favorite = otherFav;
+      }
+    );
   })
+
+  // Favorite button functionality using XMLHttpRequest
+  // const favButton = document.querySelector('#favButton');
+  //
+  // favButton.addEventListener('click', function(e) {
+  //   let url = new URL(window.location.href);
+  //   const restaurant_id = parseInt(url.searchParams.get('id'));
+  //   const otherFav = (self.restaurant.is_favorite === 'true') ? 'false' : 'true';
+  //   url = `http://localhost:1337/restaurants/${restaurant_id}/?is_favorite=${otherFav}`;
+  //   const xhr = new XMLHttpRequest();
+  //   xhr.open("PUT", url);
+  //   xhr.onload = function () {
+  //     favButton.innerHTML = isRestaurantFavorite(self.restaurant);
+  //     self.restaurant.is_favorite = otherFav;
+  //   }
+  //   xhr.send();
+  // })
+
+
   // var data = {};
   // data.name = "John2";
   // data.lastname  = "Snow2";
@@ -132,6 +150,8 @@ fetchRestaurantFromURL = (callback) => {
 
 // Returning string for favorite restaurant
 isRestaurantFavorite = (restaurant) => {
+
+  fetch(`http://localhost:1337/restaurants/${restaurant.id}`)
   const xhr = new XMLHttpRequest();
   xhr.open('GET', `http://localhost:1337/restaurants/${restaurant.id}`)
   xhr.onload = function() {
@@ -139,10 +159,8 @@ isRestaurantFavorite = (restaurant) => {
     const favButton = document.querySelector('#favButton');
     if (data.is_favorite == 'true') {
       favButton.innerHTML = '&#11088; unfavorite';
-      // return '&#11088; unfavorite';
     } else {
       favButton.innerHTML = '&#10032; favorite';
-      // return '&#10032; favorite';
     }
   }
   xhr.send()
