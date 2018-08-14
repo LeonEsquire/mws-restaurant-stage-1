@@ -21,7 +21,30 @@ self.addEventListener('install', function(event) {
   );
 });
 
+// self.addEventListener('sync', function(event) {
+//   if (event.tag == 'myFirstSync') {
+//     event.waitUntil(return fetch('http://localhost:8000/'));
+//   }
+// });
+
+
 self.addEventListener('fetch', function(event) {
+
+  if (event.request.method === 'POST') {
+    // Adding request in IDB
+    if (navigator.onLine) {
+      dbReview().then(function(db) {
+        var tx = db.transaction('reviews', 'readwrite');
+        var reviewsStore = tx.objectStore('reviews');
+        reviewsStore.put(event.request.clone(), 0);
+      })
+      .catch(function(err) {
+        console.log('error while putting POST request to IDB', err);
+      });
+    }
+
+  }
+
 
   if (event.request.method === 'PUT') {
     const url = new URL(event.request.url)
@@ -98,6 +121,7 @@ self.addEventListener('fetch', function(event) {
             })
           });
         } else {
+          // response from DB
           const response = new Response(JSON.stringify(restaurantStore), {
             headers: new Headers({
               'Content-type': 'application/json',
@@ -171,9 +195,7 @@ function dbPromise() {
 
 function dbReview() {
   var dbPromise = idb.open('review', 1, function(upgradeDb) {
-    var store = upgradeDb.createObjectStore('reviews', {
-      keyPath: 'id'
-    });
+    var store = upgradeDb.createObjectStore('reviews');
   });
   return dbPromise;
 }

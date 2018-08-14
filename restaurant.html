@@ -49,6 +49,7 @@
     <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
+      <button type="button" id="favButton"></button>
       <h1 id="restaurant-name"></h1>
       <img id="restaurant-img">
       <p id="restaurant-cuisine"></p>
@@ -60,6 +61,19 @@
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
     </section>
+    <form id="new_review" method="post">
+      <input type="text" name="name" id="name" placeholder="Enter your name">
+      <input type="textarea" name="comments" id="comments">
+      <select id="rating" name="rating">
+        <option value="Rate" disabled>Rate</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <input type="submit" value="Submit Review">
+    </form>
     <!-- End reviews -->
   </main>
   <!-- End main -->
