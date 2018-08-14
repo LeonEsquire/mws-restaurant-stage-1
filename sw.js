@@ -1,4 +1,5 @@
 importScripts('./js/idb.js');
+importScripts('./js/store.js');
 
 self.addEventListener('install', function(event) {
   const urlsToCache = [
@@ -9,6 +10,7 @@ self.addEventListener('install', function(event) {
     'js/index.js',
     'js/main.js',
     'js/idb.js',
+    'js/store.js',
     'css/styles.css',
     'https://fonts.googleapis.com/css?family=Roboto',
     'https://cdn.jsdelivr.net/npm/idb@2.1.1/lib/idb.min.js'
@@ -27,24 +29,40 @@ self.addEventListener('install', function(event) {
 //   }
 // });
 
+self.addEventListener('sync', function(event) {
+  event.waitUntil(
+    store.outbox('readonly').then(function(outbox) {
+      return outbox.getAll();
+    }).then(function(messages) {
+
+
+              return Promise.all(messages.map(function(message) {
+                return fetch('http://localhost:1337/reviews/', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    name: message.name,
+                    comments: message.comments,
+                    restaurant_id: message.restaurant_id,
+                    rating: message.rating,
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json'
+                  }
+                }).then(function(response) {
+                  return response.json();
+                }).then(function(data) {
+                  return store.outbox('readwrite').then(function(outbox) {
+                    return outbox.delete(message.id);
+                  });
+                })
+              }))
+
+
+    }).catch(function(err) { console.error(err); })
+  );
+});
 
 self.addEventListener('fetch', function(event) {
-
-  if (event.request.method === 'POST') {
-    // Adding request in IDB
-    if (navigator.onLine) {
-      dbReview().then(function(db) {
-        var tx = db.transaction('reviews', 'readwrite');
-        var reviewsStore = tx.objectStore('reviews');
-        reviewsStore.put(event.request.clone(), 0);
-      })
-      .catch(function(err) {
-        console.log('error while putting POST request to IDB', err);
-      });
-    }
-
-  }
-
 
   if (event.request.method === 'PUT') {
     const url = new URL(event.request.url)

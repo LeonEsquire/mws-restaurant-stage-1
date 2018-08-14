@@ -38,29 +38,29 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 
   // Leaving Review
-  document.querySelector('#new_review').onsubmit = () => {
-    const name = document.querySelector('#name').value;
-    const comments = document.querySelector('#comments').value;
-    const rating = document.querySelector('#rating').value;
-
-    // Getting id from url
-    const url = new URL(window.location.href);
-    const restaurant_id = parseInt(url.searchParams.get('id'));
-
-    const request = new XMLHttpRequest();
-    request.open('POST', 'http://localhost:1337/reviews/')
-    request.onload = () => {
-      const data = JSON.parse(request.responseText);
-    }
-    const form = new FormData();
-    form.append('name', name);
-    form.append('comments', comments);
-    form.append('rating', rating);
-    form.append('restaurant_id', restaurant_id);
-    request.send(form);
-
-    return false;
-  };
+  // document.querySelector('#new_review').onsubmit = () => {
+  //   const name = document.querySelector('#name').value;
+  //   const comments = document.querySelector('#comments').value;
+  //   const rating = document.querySelector('#rating').value;
+  //
+  //   // Getting id from url
+  //   const url = new URL(window.location.href);
+  //   const restaurant_id = parseInt(url.searchParams.get('id'));
+  //
+  //   const request = new XMLHttpRequest();
+  //   request.open('POST', 'http://localhost:1337/reviews/')
+  //   request.onload = () => {
+  //     const data = JSON.parse(request.responseText);
+  //   }
+  //   const form = new FormData();
+  //   form.append('name', name);
+  //   form.append('comments', comments);
+  //   form.append('rating', rating);
+  //   form.append('restaurant_id', restaurant_id);
+  //   request.send(form);
+  //
+  //   return false;
+  // };
 
   // Favorite button functionality using Fetch api
   const favButton = document.querySelector('#favButton');
