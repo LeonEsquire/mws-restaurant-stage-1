@@ -27,5 +27,7 @@
     "gulp-uglify": "^3.0.0",
     "pump": "^3.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "binding": "^3.0.3"
+  }
 }
