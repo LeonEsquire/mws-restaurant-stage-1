@@ -23,6 +23,10 @@ class DBHelper {
     return `http://localhost:${port}/restaurants`;
   }
 
+  static get REVIEWS_URL() {
+    const port = 1337; // Change this to your server port
+    return `http://localhost:${port}/reviews/?restaurant_id=`;
+  }
   /**
    * Fetch all restaurants.
    */
@@ -92,7 +96,14 @@ class DBHelper {
   static fetchRestaurantById(id, callback) {
     fetch(`http://localhost:1337/restaurants/${id}`)
     .then(response => response.json())
-    .then(restaurant => callback(null, restaurant))
+    .then(restaurant => {
+      fetch(DBHelper.REVIEWS_URL + id)
+      .then(response => response.json())
+      .then(allReviews => {
+        restaurant.reviews = allReviews;
+        callback(null, restaurant);
+      })
+    })
     .catch(() => callback('Restaurant does not exist', null))
 
     // fetch all restaurants with proper error handling.

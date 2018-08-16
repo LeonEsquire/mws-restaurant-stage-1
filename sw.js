@@ -34,56 +34,46 @@ self.addEventListener('sync', function(event) {
     store.outbox('readonly').then(function(outbox) {
       return outbox.getAll();
     }).then(function(messages) {
+      return Promise.all(messages.map(function(message) {
+        return fetch('http://localhost:1337/reviews/', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: message.name,
+            comments: message.comments,
+            restaurant_id: message.restaurant_id,
+            rating: message.rating,
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(function(response) {
+          return response.json();
+        }).then(function(data) {
+          dbReview().then(function(db) {
+            var reviewsStore = db.transaction('reviews').objectStore('reviews');
+            return reviewsStore.get(data.restaurant_id);
+          })
+          .then(function(reviewsStore) {
+            return fetch(`http://localhost:1337/reviews/?restaurant_id=${data.restaurant_id}`).then(function(response) {
+              const responseToCache = response.clone().json();
 
-
-              return Promise.all(messages.map(function(message) {
-                return fetch('http://localhost:1337/reviews/', {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    name: message.name,
-                    comments: message.comments,
-                    restaurant_id: message.restaurant_id,
-                    rating: message.rating,
-                  }),
-                  headers: {
-                    'Content-Type': 'application/json'
-                  }
-                }).then(function(response) {
-                  return response.json();
-                }).then(function(data) {
-
-                  dbReview().then(function(db) {
-                    var reviewsStore = db.transaction('reviews').objectStore('reviews');
-                    return reviewsStore.get(data.restaurant_id);
-                  })
-                  .then(function(reviewsStore) {
-
-
-                    return fetch(`http://localhost:1337/reviews/?restaurant_id=${data.restaurant_id}`).then(function(response) {
-                      const responseToCache = response.clone().json();
-
-                      responseToCache.then(function(dataArray) {
-                        dbReview().then(function(db) {
-                          var tx = db.transaction('reviews', 'readwrite');
-                          var reviewsStore = tx.objectStore('reviews');
-                          reviewsStore.put(dataArray, data.restaurant_id);
-                        })
-                        .catch(function(err) {
-                          console.log('something went wrong with DB adding', err);
-                        });
-                      })
-                    });
-
-
-                  })
-
-                  return store.outbox('readwrite').then(function(outbox) {
-                    return outbox.delete(message.id);
-                  });
+              responseToCache.then(function(dataArray) {
+                dbReview().then(function(db) {
+                  var tx = db.transaction('reviews', 'readwrite');
+                  var reviewsStore = tx.objectStore('reviews');
+                  reviewsStore.put(dataArray, data.restaurant_id);
                 })
-              }))
-
-
+                .catch(function(err) {
+                  console.log('something went wrong with DB adding', err);
+                });
+              })
+            });
+          })
+          return store.outbox('readwrite').then(function(outbox) {
+            return outbox.delete(message.id);
+          });
+        })
+      }))
     }).catch(function(err) { console.error(err); })
   );
 });
@@ -260,11 +250,23 @@ self.addEventListener('fetch', function(event) {
     // Response without using indexDb
     event.respondWith(caches.open('restaurant-static-v1').then(function(cache) {
       return cache.match(event.request).then(function(response) {
+
+
         return response || fetch(event.request).then(function(response) {
-            if(event.request.method === 'GET') {
+          const missingImagePattern = /http:\/\/localhost:8000\/img\/((thumbnail\/undefined-thumbnail\.jpg)|(undefined\.jpg))/;
+
+          if(missingImagePattern.test(event.request.url)) {
+            return fetch('http://localhost:8000/img/thumbnail/thumbnail.png')
+            .then(response => {
               cache.put(event.request, response.clone());
-            }
-            return response;
+              return response;
+            })
+          }
+
+          if(event.request.method === 'GET') {
+            cache.put(event.request, response.clone());
+          }
+          return response;
         });
       });
     })

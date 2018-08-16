@@ -62,17 +62,20 @@
       <ul id="reviews-list"></ul>
     </section>
     <form id="new_review" method="post">
-      <input type="text" name="name" id="name" placeholder="Enter your name">
-      <input type="textarea" name="comments" id="comments">
-      <select id="rating" name="rating">
-        <option value="Rate" disabled>Rate</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-      </select>
-      <input type="submit" value="Submit Review">
+      <h3>Leave your review:</h3>
+      <li><input type="text" name="name" id="name" autocomplete="off" placeholder="Enter your name"></li>
+      <li><textarea autocomplete="off" name="comments" id="comments" placeholder="Enter comment"></textarea></li>
+      <li>
+        <select id="rating" name="rating">
+          <option value="Rate" disabled selected>Rate</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </li>
+      <li><input type="submit" value="Submit Review"></li>
     </form>
     <!-- End reviews -->
   </main>

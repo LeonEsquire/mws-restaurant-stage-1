@@ -1,18 +1,1 @@
-var store = {
-  db: null,
-
-  init: function() {
-    if (store.db) { return Promise.resolve(store.db); }
-    return idb.open('messages', 1, function(upgradeDb) {
-      upgradeDb.createObjectStore('outbox', { autoIncrement : true, keyPath: 'id' });
-    }).then(function(db) {
-      return store.db = db;
-    });
-  },
-
-  outbox: function(mode) {
-    return store.init().then(function(db) {
-      return db.transaction('outbox', mode).objectStore('outbox');
-    })
-  }
-}
+var store={db:null,init:function(){return store.db?Promise.resolve(store.db):idb.open("messages",1,function(t){t.createObjectStore("outbox",{autoIncrement:!0,keyPath:"id"})}).then(function(t){return store.db=t})},outbox:function(e){return store.init().then(function(t){return t.transaction("outbox",e).objectStore("outbox")})}};

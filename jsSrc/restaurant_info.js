@@ -36,6 +36,73 @@ document.addEventListener('DOMContentLoaded', function(){
       };
     }
   });
+
+  // Leaving Review
+  // document.querySelector('#new_review').onsubmit = () => {
+  //   const name = document.querySelector('#name').value;
+  //   const comments = document.querySelector('#comments').value;
+  //   const rating = document.querySelector('#rating').value;
+  //
+  //   // Getting id from url
+  //   const url = new URL(window.location.href);
+  //   const restaurant_id = parseInt(url.searchParams.get('id'));
+  //
+  //   const request = new XMLHttpRequest();
+  //   request.open('POST', 'http://localhost:1337/reviews/')
+  //   request.onload = () => {
+  //     const data = JSON.parse(request.responseText);
+  //   }
+  //   const form = new FormData();
+  //   form.append('name', name);
+  //   form.append('comments', comments);
+  //   form.append('rating', rating);
+  //   form.append('restaurant_id', restaurant_id);
+  //   request.send(form);
+  //
+  //   return false;
+  // };
+
+  // Favorite button functionality using Fetch api
+  const favButton = document.querySelector('#favButton');
+
+  favButton.addEventListener('click', function(e) {
+    let url = new URL(window.location.href);
+    const restaurant_id = parseInt(url.searchParams.get('id'));
+    const otherFav = (self.restaurant.is_favorite === 'true') ? 'false' : 'true';
+    url = `http://localhost:1337/restaurants/${restaurant_id}/?is_favorite=${otherFav}`;
+    fetch(url, {method: 'PUT'})
+      .then(response => response.json())
+      .then(data => {
+        favButton.innerHTML = isRestaurantFavorite(self.restaurant);
+        self.restaurant.is_favorite = otherFav;
+      }
+    );
+  })
+
+  // Favorite button functionality using XMLHttpRequest
+  // const favButton = document.querySelector('#favButton');
+  //
+  // favButton.addEventListener('click', function(e) {
+  //   let url = new URL(window.location.href);
+  //   const restaurant_id = parseInt(url.searchParams.get('id'));
+  //   const otherFav = (self.restaurant.is_favorite === 'true') ? 'false' : 'true';
+  //   url = `http://localhost:1337/restaurants/${restaurant_id}/?is_favorite=${otherFav}`;
+  //   const xhr = new XMLHttpRequest();
+  //   xhr.open("PUT", url);
+  //   xhr.onload = function () {
+  //     favButton.innerHTML = isRestaurantFavorite(self.restaurant);
+  //     self.restaurant.is_favorite = otherFav;
+  //   }
+  //   xhr.send();
+  // })
+
+
+  // var data = {};
+  // data.name = "John2";
+  // data.lastname  = "Snow2";
+  // var json = JSON.stringify(data);
+
+
 });
 
 /**
@@ -81,12 +148,33 @@ fetchRestaurantFromURL = (callback) => {
   }
 }
 
+// Returning string for favorite restaurant
+isRestaurantFavorite = (restaurant) => {
+
+  fetch(`http://localhost:1337/restaurants/${restaurant.id}`)
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', `http://localhost:1337/restaurants/${restaurant.id}`)
+  xhr.onload = function() {
+    const data = JSON.parse(xhr.responseText);
+    const favButton = document.querySelector('#favButton');
+    if (data.is_favorite == 'true') {
+      favButton.innerHTML = '&#11088; unfavorite';
+    } else {
+      favButton.innerHTML = '&#10032; favorite';
+    }
+  }
+  xhr.send()
+}
+
 /**
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
+
+  const favButton = document.getElementById('favButton');
+  favButton.innerHTML = isRestaurantFavorite(restaurant);
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
@@ -176,7 +264,8 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  const dateValue = new Date(review.createdAt);
+  date.innerHTML = dateValue.toLocaleDateString();
   li.appendChild(date);
 
   const rating = document.createElement('p');

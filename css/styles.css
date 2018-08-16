@@ -41,6 +41,19 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   min-height: 100%;
 } */
 
+#new_review {
+	list-style: none;
+  margin: 20px;
+}
+
+#new_review > li {
+	margin-bottom: 10px;
+}
+
+#new_review > li > * {
+	padding: 20px;
+}
+
 #maincontent {
 	grid-area: 2/1/span 1/span 2;
 	display: grid;
