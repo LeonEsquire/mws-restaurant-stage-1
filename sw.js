@@ -51,6 +51,32 @@ self.addEventListener('sync', function(event) {
                 }).then(function(response) {
                   return response.json();
                 }).then(function(data) {
+
+                  dbReview().then(function(db) {
+                    var reviewsStore = db.transaction('reviews').objectStore('reviews');
+                    return reviewsStore.get(data.restaurant_id);
+                  })
+                  .then(function(reviewsStore) {
+
+
+                    return fetch(`http://localhost:1337/reviews/?restaurant_id=${data.restaurant_id}`).then(function(response) {
+                      const responseToCache = response.clone().json();
+
+                      responseToCache.then(function(dataArray) {
+                        dbReview().then(function(db) {
+                          var tx = db.transaction('reviews', 'readwrite');
+                          var reviewsStore = tx.objectStore('reviews');
+                          reviewsStore.put(dataArray, data.restaurant_id);
+                        })
+                        .catch(function(err) {
+                          console.log('something went wrong with DB adding', err);
+                        });
+                      })
+                    });
+
+
+                  })
+
                   return store.outbox('readwrite').then(function(outbox) {
                     return outbox.delete(message.id);
                   });
@@ -119,6 +145,51 @@ self.addEventListener('fetch', function(event) {
     );
     return;
   }
+
+  // JSON request for individual reviews
+  if (/1337\/reviews\/\?restaurant_id=\d{1,3}$/.test(event.request.url)) {
+    const url = new URL(event.request.url);
+    const restaurant_id = url.searchParams.get('restaurant_id');
+    event.respondWith(
+      dbReview().then(function(db) {
+        var reviewsStore = db.transaction('reviews').objectStore('reviews');
+        return reviewsStore.get(parseInt(restaurant_id));
+      })
+      .then(function(reviewsStore) {
+
+        if (!reviewsStore) {
+          return fetch(`http://localhost:1337/reviews/?restaurant_id=${restaurant_id}`).then(function(response) {
+            const responseToCache = response.clone().json();
+
+            return responseToCache.then(function(dataArray) {
+              dbReview().then(function(db) {
+                var tx = db.transaction('reviews', 'readwrite');
+                var restaurantsStore = tx.objectStore('reviews');
+                restaurantsStore.put(dataArray, parseInt(restaurant_id));
+              })
+              .catch(function(err) {
+                console.log('something went wrong with DB adding', err);
+              });
+              return response;
+            })
+          });
+        } else {
+          // response from DB
+          const response = new Response(JSON.stringify(reviewsStore), {
+            headers: new Headers({
+              'Content-type': 'application/json',
+              'Access-Control-Allow-Credentials': 'true'
+            }),
+            status: 200
+          });
+          return response;
+        }
+
+      })
+    )
+    return
+  }
+
 
   // JSON request for individual restaurant
   if (/1337\/restaurants\/\d{1,2}$/.test(event.request.url)) {
